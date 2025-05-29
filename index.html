@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Estacionamento - Shopping Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .parking-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .parking-spot {
+            aspect-ratio: 1;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .parking-spot.free {
+            background: #d5f4e6;
+            border-color: #27ae60;
+            color: #27ae60;
+        }
+
+        .parking-spot.occupied {
+            background: #fdeaea;
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .parking-spot:hover {
+            transform: scale(1.05);
+        }
+
+        .status-display {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 5px solid #3498db;
+        }
+
+        .ticket {
+            background: white;
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .ticket h3 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .ticket-info {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d5f4e6;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        .alert-danger {
+            background: #fdeaea;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .alert-info {
+            background: #ebf3fd;
+            color: #3498db;
+            border: 1px solid #3498db;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .parking-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🅿️ Sistema de Estacionamento</h1>
+            <p>Shopping Center - Controle Automatizado de Veículos</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Seção de Entrada -->
+            <div class="section">
+                <h2>🚗 Entrada de Veículos</h2>
+                <div class="form-group">
+                    <label for="plateEntry">Placa do Veículo (Padrão Mercosul):</label>
+                    <input type="text" id="plateEntry" placeholder="Ex: ABC1D23" maxlength="7">
+                </div>
+                <div class="form-group">
+                    <label for="entryTime">Horário de Entrada:</label>
+                    <input type="datetime-local" id="entryTime">
+                </div>
+                <button class="btn btn-success" onclick="registerEntry()">Registrar Entrada</button>
+                <button class="btn" onclick="validatePlate()">Validar Placa</button>
+                
+                <div id="entryStatus" class="status-display" style="display: none;"></div>
+            </div>
+
+            <!-- Seção de Saída -->
+            <div class="section">
+                <h2>🚪 Saída de Veículos</h2>
+                <div class="form-group">
+                    <label for="plateExit">Placa do Veículo:</label>
+                    <input type="text" id="plateExit" placeholder="Ex: ABC1D23" maxlength="7">
+                </div>
+                <div class="form-group">
+                    <label for="exitTime">Horário de Saída:</label>
+                    <input type="datetime-local" id="exitTime">
+                </div>
+                <button class="btn btn-danger" onclick="registerExit()">Registrar Saída</button>
+                <button class="btn btn-warning" onclick="calculateCost()">Calcular Valor</button>
+                
+                <div id="exitStatus" class="status-display" style="display: none;"></div>
+            </div>
+
+             <!-- Mapa do Estacionamento -->
+            <div class="section full-width">
+                <h2 class="centered">🗺️ Mapa do Estacionamento</h2>
+                <div class="form-group">
+                    <label for="gridSize">Configurar Tamanho (MxN):</label>
+                    <select id="gridSize" onchange="updateParkingGrid()">
+                        <option value="5x5">5x5 (25 vagas)</option>
+                        <option value="6x6">6x6 (36 vagas)</option>
+                        <option value="8x6">8x6 (48 vagas)</option>
+                        <option value="10x8">10x8 (80 vagas)</option>
+                    </select>
+                </div>
+                <div id="parkingGrid" class="parking-grid"></div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalSpots">25</div>
+                        <div class="stat-label">Total de Vagas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="occupiedSpots">0</div>
+                        <div class="stat-label">Vagas Ocupadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="freeSpots">25</div>
+                        <div class="stat-label">Vagas Livres</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ticket de Estacionamento -->
+            <div class="section full-width">
+                <h2>🎫 Ticket de Estacionamento</h2>
+                <div id="ticketDisplay" class="ticket" style="display: none;">
+                    <h3>SHOPPING CENTER - TICKET DE ESTACIONAMENTO</h3>
+                    <div class="ticket-info">
+                        <span>Placa:</span>
+                        <span id="ticketPlate"></span>
+                    </div>
+                    <div class="ticket-info">
+                        <span>Estado:</span>
+                        <span id="ticketState"></span>
+                    </div>
+                    <div class="ticket-info">
+                        <span>Vaga:</span>
+                        <span id="ticketSpot"></span>
+                    </div>
+                    <div class="ticket-info">
+                        <span>Entrada:</span>
+                        <span id="ticketEntryTime"></span>
+                    </div>
+                    <div class="ticket-info">
+                        <span>Saída:</span>
+                        <span id="ticketExitTime"></span>
+                    </div>
+                    <div class="ticket-info">
+                        <span>Tempo:</span>
+                        <span id="ticketDuration"></span>
+                    </div>
+                    <div class="ticket-info" style="border-top: 2px dashed #3498db; padding-top: 10px; margin-top: 10px; font-size: 1.2em;">
+                        <span><strong>Valor Total:</strong></span>
+                        <span id="ticketTotal"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ParkingSystem {
+            constructor() {
+                this.plateRanges = {
+                    'AAA-BEZ': 'Paraná',
+                    'BFA-GKI': 'São Paulo',
+                    'GKJ-HOK': 'Minas Gerais',
+                    'HOL-HQE': 'Maranhão',
+                    'HQF-HTW': 'Mato Grosso do Sul',
+                    'HTX-HZA': 'Ceará',
+                    'HZB-IAP': 'Sergipe',
+                    'IAQ-JDO': 'Rio Grande do Sul',
+                    'JDP-JKR': 'Distrito Federal',
+                    'JKS-JSZ': 'Bahia',
+                    'JTA-JWE': 'Pará',
+                    'JWF-JXY': 'Amazonas',
+                    'JXZ-KAU': 'Mato Grosso',
+                    'KAV-KFC': 'Goiás',
+                    'KFD-KME': 'Pernambuco',
+                    'KMF-LVE': 'Rio de Janeiro',
+                    'LVF-LWQ': 'Piauí',
+                    'LWR-MMM': 'Santa Catarina',
+                    'MMN-MOW': 'Paraíba',
+                    'MOX-MTZ': 'Espírito Santo',
+                    'MUA-MVK': 'Alagoas',
+                    'MVL-MXG': 'Tocantins',
+                    'MXH-MZM': 'Rio Grande do Norte',
+                    'MZN-NAG': 'Acre',
+                    'NAH-NBA': 'Roraima',
+                    'NBB-NEH': 'Rondônia',
+                    'NEI-NFB': 'Amapá'
+                };
+                
+                this.vehicles = new Map();
+                this.parkingGrid = [];
+                this.gridRows = 5;
+                this.gridCols = 5;
+                this.priceFirstThreeHours = 5.00;
+                this.priceAdditionalHour = 3.00;
+                
+                this.initializeParkingGrid();
+                this.updateParkingDisplay();
+                this.setCurrentTime();
+            }
+
+            initializeParkingGrid() {
+                this.parkingGrid = [];
+                for (let i = 0; i < this.gridRows; i++) {
+                    this.parkingGrid[i] = [];
+                    for (let j = 0; j < this.gridCols; j++) {
+                        this.parkingGrid[i][j] = null;
+                    }
+                }
+            }
+
+            setCurrentTime() {
+                const now = new Date();
+                const dateTimeString = now.toISOString().slice(0, 16);
+                document.getElementById('entryTime').value = dateTimeString;
+                document.getElementById('exitTime').value = dateTimeString;
+            }
+
+            validatePlateFormat(plate) {
+                const mercosulPattern = /^[A-Z]{3}[0-9][A-Z][0-9]{2}$/;
+                return mercosulPattern.test(plate.toUpperCase());
+            }
+
+            getStateFromPlate(plate) {
+                const platePrefix = plate.substring(0, 3).toUpperCase();
+                
+                for (const [range, state] of Object.entries(this.plateRanges)) {
+                    const [start, end] = range.split('-');
+                    if (platePrefix >= start && platePrefix <= end) {
+                        return state;
+                    }
+                }
+                return null;
+            }
+
+            findFreeSpot() {
+                for (let i = 0; i < this.gridRows; i++) {
+                    for (let j = 0; j < this.gridCols; j++) {
+                        if (this.parkingGrid[i][j] === null) {
+                            return { row: i, col: j, spot: `${String.fromCharCode(65 + i)}${j + 1}` };
+                        }
+                    }
+                }
+                return null;
+            }
+
+            calculateParkingCost(entryTime, exitTime) {
+                const entry = new Date(entryTime);
+                const exit = new Date(exitTime);
+                const diffMs = exit - entry;
+                const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+                if (diffMinutes <= 15) {
+                    return { hours: 0, minutes: diffMinutes, cost: 0 };
+                }
+
+                const totalHours = Math.ceil(diffMinutes / 60);
+                let cost = 0;
+
+                if (totalHours <= 3) {
+                    cost = this.priceFirstThreeHours;
+                } else {
+                    cost = this.priceFirstThreeHours + ((totalHours - 3) * this.priceAdditionalHour);
+                }
+
+                return {
+                    hours: Math.floor(diffMinutes / 60),
+                    minutes: diffMinutes % 60,
+                    totalMinutes: diffMinutes,
+                    cost: cost
+                };
+            }
+
+            registerEntry() {
+                const plate = document.getElementById('plateEntry').value.toUpperCase().trim();
+                const entryTime = document.getElementById('entryTime').value;
+
+                if (!plate || !entryTime) {
+                    this.showStatus('entryStatus', 'Por favor, preencha todos os campos.', 'danger');
+                    return;
+                }
+
+                if (!this.validatePlateFormat(plate)) {
+                    this.showStatus('entryStatus', 'Formato de placa inválido. Use o padrão Mercosul (ABC1D23).', 'danger');
+                    return;
+                }
+
+                if (this.vehicles.has(plate)) {
+                    this.showStatus('entryStatus', 'Veículo já está no estacionamento.', 'danger');
+                    return;
+                }
+
+                const state = this.getStateFromPlate(plate);
+                if (!state) {
+                    this.showStatus('entryStatus', 'Placa não corresponde a nenhum estado brasileiro válido.', 'danger');
+                    return;
+                }
+
+                const freeSpot = this.findFreeSpot();
+                if (!freeSpot) {
+                    this.showStatus('entryStatus', 'Estacionamento lotado. Não há vagas disponíveis.', 'danger');
+                    return;
+                }
+
+                // Registrar veículo
+                this.vehicles.set(plate, {
+                    plate: plate,
+                    state: state,
+                    entryTime: entryTime,
+                    spot: freeSpot,
+                    exitTime: null
+                });
+
+                // Ocupar vaga
+                this.parkingGrid[freeSpot.row][freeSpot.col] = plate;
+
+                this.showStatus('entryStatus', 
+                    `Entrada registrada com sucesso!<br>
+                    <strong>Placa:</strong> ${plate}<br>
+                    <strong>Estado:</strong> ${state}<br>
+                    <strong>Vaga:</strong> ${freeSpot.spot}<br>
+                    <strong>Horário:</strong> ${new Date(entryTime).toLocaleString('pt-BR')}`, 
+                    'success'
+                );
+
+                this.updateParkingDisplay();
+                this.clearForm('entry');
+            }
+
+            registerExit() {
+                const plate = document.getElementById('plateExit').value.toUpperCase().trim();
+                const exitTime = document.getElementById('exitTime').value;
+
+                if (!plate || !exitTime) {
+                    this.showStatus('exitStatus', 'Por favor, preencha todos os campos.', 'danger');
+                    return;
+                }
+
+                if (!this.vehicles.has(plate)) {
+                    this.showStatus('exitStatus', 'Veículo não encontrado no estacionamento.', 'danger');
+                    return;
+                }
+
+                const vehicle = this.vehicles.get(plate);
+                vehicle.exitTime = exitTime;
+
+                const costInfo = this.calculateParkingCost(vehicle.entryTime, exitTime);
+
+                // Liberar vaga
+                this.parkingGrid[vehicle.spot.row][vehicle.spot.col] = null;
+
+                this.showTicket(vehicle, costInfo);
+                this.showStatus('exitStatus', 
+                    `Saída registrada com sucesso!<br>
+                    <strong>Placa:</strong> ${plate}<br>
+                    <strong>Tempo:</strong> ${costInfo.hours}h ${costInfo.minutes}min<br>
+                    <strong>Valor:</strong> R$ ${costInfo.cost.toFixed(2)}`, 
+                    'success'
+                );
+
+                // Remover do sistema
+                this.vehicles.delete(plate);
+                this.updateParkingDisplay();
+                this.clearForm('exit');
+            }
+
+            calculateCost() {
+                const plate = document.getElementById('plateExit').value.toUpperCase().trim();
+                const exitTime = document.getElementById('exitTime').value;
+
+                if (!plate || !exitTime) {
+                    this.showStatus('exitStatus', 'Por favor, preencha todos os campos.', 'danger');
+                    return;
+                }
+
+                if (!this.vehicles.has(plate)) {
+                    this.showStatus('exitStatus', 'Veículo não encontrado no estacionamento.', 'danger');
+                    return;
+                }
+
+                const vehicle = this.vehicles.get(plate);
+                const costInfo = this.calculateParkingCost(vehicle.entryTime, exitTime);
+
+                this.showStatus('exitStatus', 
+                    `<strong>Cálculo do Valor:</strong><br>
+                    Tempo de permanência: ${costInfo.hours}h ${costInfo.minutes}min<br>
+                    Valor a pagar: <strong>R$ ${costInfo.cost.toFixed(2)}</strong><br>
+                    <small>Tolerância: 15 minutos gratuitos<br>
+                    Até 3h: R$ ${this.priceFirstThreeHours.toFixed(2)} | Hora adicional: R$ ${this.priceAdditionalHour.toFixed(2)}</small>`, 
+                    'info'
+                );
+            }
+
+            validatePlate() {
+                const plate = document.getElementById('plateEntry').value.toUpperCase().trim();
+
+                if (!plate) {
+                    this.showStatus('entryStatus', 'Por favor, digite uma placa.', 'danger');
+                    return;
+                }
+
+                if (!this.validatePlateFormat(plate)) {
+                    this.showStatus('entryStatus', 'Formato inválido. A placa deve seguir o padrão Mercosul: 3 letras + 1 número + 1 letra + 2 números (ex: ABC1D23)', 'danger');
+                    return;
+                }
+
+                const state = this.getStateFromPlate(plate);
+                if (state) {
+                    this.showStatus('entryStatus', 
+                        `<strong>Placa válida!</strong><br>
+                        Formato: Mercosul ✓<br>
+                        Estado: ${state}`, 
+                        'success'
+                    );
+                } else {
+                    this.showStatus('entryStatus', 'Placa não corresponde a nenhum estado brasileiro válido.', 'danger');
+                }
+            }
+
+            showTicket(vehicle, costInfo) {
+                document.getElementById('ticketPlate').textContent = vehicle.plate;
+                document.getElementById('ticketState').textContent = vehicle.state;
+                document.getElementById('ticketSpot').textContent = vehicle.spot.spot;
+                document.getElementById('ticketEntryTime').textContent = new Date(vehicle.entryTime).toLocaleString('pt-BR');
+                document.getElementById('ticketExitTime').textContent = new Date(vehicle.exitTime).toLocaleString('pt-BR');
+                document.getElementById('ticketDuration').textContent = `${costInfo.hours}h ${costInfo.minutes}min`;
+                document.getElementById('ticketTotal').textContent = `R$ ${costInfo.cost.toFixed(2)}`;
+                
+                document.getElementById('ticketDisplay').style.display = 'block';
+            }
+
+            showStatus(elementId, message, type) {
+                const element = document.getElementById(elementId);
+                element.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+                element.style.display = 'block';
+                
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+
+            updateParkingDisplay() {
+                const grid = document.getElementById('parkingGrid');
+                grid.innerHTML = '';
+                
+                for (let i = 0; i < this.gridRows; i++) {
+                    for (let j = 0; j < this.gridCols; j++) {
+                        const spot = document.createElement('div');
+                        const spotId = `${String.fromCharCode(65 + i)}${j + 1}`;
+                        
+                        if (this.parkingGrid[i][j] === null) {
+                            spot.className = 'parking-spot free';
+                            spot.textContent = spotId;
+                            spot.title = 'Vaga livre';
+                        } else {
+                            spot.className = 'parking-spot occupied';
+                            spot.textContent = this.parkingGrid[i][j];
+                            spot.title = `Ocupada por: ${this.parkingGrid[i][j]}`;
+                        }
+                        
+                        grid.appendChild(spot);
+                    }
+                }
+                
+                this.updateStats();
+            }
+
+            updateStats() {
+                const total = this.gridRows * this.gridCols;
+                const occupied = this.vehicles.size;
+                const free = total - occupied;
+                
+                document.getElementById('totalSpots').textContent = total;
+                document.getElementById('occupiedSpots').textContent = occupied;
+                document.getElementById('freeSpots').textContent = free;
+            }
+
+            updateParkingGrid() {
+                const gridSize = document.getElementById('gridSize').value;
+                const [rows, cols] = gridSize.split('x').map(Number);
+                
+                this.gridRows = rows;
+                this.gridCols = cols;
+                
+                // Preservar veículos existentes se possível
+                const oldVehicles = new Map(this.vehicles);
+                this.vehicles.clear();
+                this.initializeParkingGrid();
+                
+                let spotIndex = 0;
+                for (const [plate, vehicle] of oldVehicles) {
+                    if (spotIndex < this.gridRows * this.gridCols) {
+                        const row = Math.floor(spotIndex / this.gridCols);
+                        const col = spotIndex % this.gridCols;
+                        
+                        vehicle.spot = { 
+                            row: row, 
+                            col: col, 
+                            spot: `${String.fromCharCode(65 + row)}${col + 1}` 
+                        };
+                        
+                        this.parkingGrid[row][col] = plate;
+                        this.vehicles.set(plate, vehicle);
+                        spotIndex++;
+                    }
+                }
+                
+                this.updateParkingDisplay();
+            }
+
+            clearForm(type) {
+                if (type === 'entry') {
+                    document.getElementById('plateEntry').value = '';
+                    this.setCurrentTime();
+                } else if (type === 'exit') {
+                    document.getElementById('plateExit').value = '';
+                    this.setCurrentTime();
+                }
+            }
+        }
+
+        // Inicializar o sistema
+        const parkingSystem = new ParkingSystem();
+
+        // Funções globais para os botões
+        function registerEntry() {
+            parkingSystem.registerEntry();
+        }
+
+        function registerExit() {
+            parkingSystem.registerExit();
+        }
+
+        function calculateCost() {
+            parkingSystem.calculateCost();
+        }
+
+        function validatePlate() {
+            parkingSystem.validatePlate();
+        }
+
+        function updateParkingGrid() {
+            parkingSystem.updateParkingGrid();
+        }
+
+        // Formatação automática de placas
+        document.getElementById('plateEntry').addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        document.getElementById('plateExit').addEventListener('input', function(e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+    </script>
+</body>
+</html>
