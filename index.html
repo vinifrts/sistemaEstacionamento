@@ -267,7 +267,7 @@
         </div>
 
         <div class="main-content">
-         
+           
             <div class="section">
                 <h2>🚗 Entrada de Veículos</h2>
                 <div class="form-group">
@@ -284,7 +284,7 @@
                 <div id="entryStatus" class="status-display" style="display: none;"></div>
             </div>
 
-            
+      
             <div class="section">
                 <h2>🚪 Saída de Veículos</h2>
                 <div class="form-group">
@@ -301,7 +301,7 @@
                 <div id="exitStatus" class="status-display" style="display: none;"></div>
             </div>
 
-             <!-- Mapa do Estacionamento -->
+             
             <div class="section full-width">
                 <h2 class="centered">🗺️ Mapa do Estacionamento</h2>
                 <div class="form-group">
@@ -331,7 +331,7 @@
                 </div>
             </div>
 
-            <!-- Ticket de Estacionamento -->
+          
             <div class="section full-width">
                 <h2>🎫 Ticket de Estacionamento</h2>
                 <div id="ticketDisplay" class="ticket" style="display: none;">
@@ -563,7 +563,7 @@
                 this.gridRows = 5;
                 this.gridCols = 5;
                 this.priceFirstThreeHours = 10.00;
-                this.priceAdditionalHour = 3.00;
+                this.priceAdditionalHour = 6.00;
                 
                 this.initializeParkingGrid();
                 this.updateParkingDisplay();
@@ -673,7 +673,7 @@
                     return;
                 }
 
-          
+              
                 this.vehicles.set(plate, {
                     plate: plate,
                     state: state,
@@ -682,7 +682,7 @@
                     exitTime: null
                 });
 
-               
+           
                 this.parkingGrid[freeSpot.row][freeSpot.col] = plate;
 
                 this.showStatus('entryStatus', 
@@ -717,7 +717,7 @@
 
                 const costInfo = this.calculateParkingCost(vehicle.entryTime, exitTime);
 
-               
+        
                 this.parkingGrid[vehicle.spot.row][vehicle.spot.col] = null;
 
                 this.showTicket(vehicle, costInfo);
@@ -853,7 +853,7 @@
                 this.gridRows = rows;
                 this.gridCols = cols;
                 
-                // Preservar veículos existentes se possível
+               
                 const oldVehicles = new Map(this.vehicles);
                 this.vehicles.clear();
                 this.initializeParkingGrid();
@@ -890,9 +890,10 @@
             }
         }
 
+      
         const parkingSystem = new ParkingSystem();
 
-       
+        
         function registerEntry() {
             parkingSystem.registerEntry();
         }
